@@ -1,0 +1,10 @@
+node_modules/
+dist/
+*.tgz
+.env
+.env.*
+*.pem
+*.key
+*.crt
+credentials.yaml
+.DS_Store
