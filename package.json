@@ -1,7 +1,7 @@
 {
   "name": "@goodandready/dsh-session-control",
   "version": "0.1.0",
-  "description": "Session management for the DeepSeek Harness sidebar: pin conversations, move them between projects, rename in place and hide reversibly",
+  "description": "Session management for the DeepSeek Harness sidebar: pin conversations, search their contents, read archived transcripts and hide the noise",
   "license": "MIT",
   "type": "module",
   "main": "lib/index.js",
@@ -42,5 +42,13 @@
   },
   "scripts": {
     "test": "node --test test/*.test.mjs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GooDAnDReaDY/dsh-session-control.git"
+  },
+  "homepage": "https://github.com/GooDAnDReaDY/dsh-session-control#readme",
+  "bugs": {
+    "url": "https://github.com/GooDAnDReaDY/dsh-session-control/issues"
   }
 }
