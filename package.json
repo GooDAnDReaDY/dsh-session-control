@@ -1,6 +1,6 @@
 {
   "name": "@goodandready/dsh-session-control",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Session management for the DeepSeek Harness sidebar: pin conversations, search their contents, read archived transcripts and hide the noise",
   "license": "MIT",
   "type": "module",
@@ -14,6 +14,7 @@
     "lib/",
     "cordis.patch.yml",
     "README.md",
+    "docs/",
     "CHANGELOG.md",
     "LICENSE"
   ],

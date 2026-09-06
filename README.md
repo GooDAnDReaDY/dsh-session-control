@@ -1,147 +1,146 @@
 # @goodandready/dsh-session-control
 
-Управление сессиями в боковой панели DeepSeek Harness: закрепление нужных
-диалогов, поиск по содержимому, чтение архивных разговоров и уборка шума.
+[English](README.md) | [Русский](docs/README.ru.md) | [中文](docs/README.zh.md)
 
-## Что плагин делает с панелью
+[![npm version](https://img.shields.io/npm/v/@goodandready/dsh-session-control.svg?style=flat-square)](https://www.npmjs.com/package/@goodandready/dsh-session-control)
+[![npm downloads](https://img.shields.io/npm/dm/@goodandready/dsh-session-control.svg?style=flat-square)](https://www.npmjs.com/package/@goodandready/dsh-session-control)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](https://opensource.org/licenses/MIT)
+[![DeepSeek Harness](https://img.shields.io/badge/DSH-Plugin-blue.svg?style=flat-square)](https://goodandready.app)
 
-Плагин **заменяет тело боковой панели** — блок со списком рабочих папок.
-Остальная панель остаётся штатной: бренд, кнопка новой сессии, подвал и вход в
-настройки не затрагиваются.
+Advanced session management for the **DeepSeek Harness** sidebar: pin essential conversations, search conversation contents with match snippets, read archived transcripts in an isolated modal, hide noise, and manage multiple sessions with bulk actions.
 
-Заменяет, а не дополняет, вынужденно: слот `sidebar.workspaces` объявлен ядром
-как `kind: "single"`, второго регистранта у него не бывает, а другого слота в
-теле панели нет.
+---
 
-## Чем отличается от штатной панели
+## What the Plugin Does to the Sidebar
 
-| | Штатная панель | С плагином |
+The plugin **replaces the body of the sidebar** — the section containing the workspace and session lists. The rest of the sidebar remains completely stock: branding, the new session button, footer, and navigation to settings remain untouched.
+
+Replacement is intentional and architecturally required: the `sidebar.workspaces` slot is declared by the harness core as `kind: "single"`, which does not allow secondary registrants, and no other extension slots exist in the sidebar body.
+
+---
+
+## Comparison: Stock Sidebar vs. dsh-session-control
+
+| Capability | Stock Sidebar | With `dsh-session-control` |
 |---|---|---|
-| Закрепление диалогов | нет | есть, общее на всю панель |
-| Архив | не виден нигде | отдельный раздел, разбитый по периодам |
-| Чтение архивной сессии | невозможно | расшифровка только на чтение |
-| Результаты поиска | только заголовок строки | плюс фрагмент с совпадением |
-| Пустые сессии | вперемешку с рабочими | скрыты, кроме текущей |
-| Действия над пачкой строк | нет | выбор галочками, Shift для диапазона |
-| Скрыть лишнее | только архив, необратимо | обратимое скрытие |
-| Индикатор работающей сессии | не показан | точка в строке |
-| Переименование | диалогом | по двойному клику в строке |
+| **Pin Conversations** | ❌ None | ✅ Global pinned section at the top of the sidebar |
+| **Archive Section** | ❌ Completely hidden | ✅ Dedicated section grouped by time periods |
+| **Read Archived Sessions** | ❌ Impossible | ✅ Read-only full transcript viewer modal |
+| **Search Results** | ⚠️ Title only | ✅ Title + contextual match snippet preview |
+| **Blank Sessions** | ⚠️ Mixed with active ones | ✅ Hidden automatically (except current active session) |
+| **Bulk Actions** | ❌ None | ✅ Multi-selection with checkboxes and Shift+Click ranges |
+| **Reversible Hiding** | ❌ Only irreversible archive | ✅ Reversible one-click hide / unhide |
+| **Active Session Indicator** | ❌ Not indicated | ✅ Live running pulse dot in row |
+| **In-Place Rename** | ⚠️ Modal prompt | ✅ Inline double-click or F2 edit |
 
-Штатные возможности — рабочие папки, поиск по содержимому диалогов, ответвление
-сессии — остаются на месте: плагин их переиспользует, а не переписывает.
+> Standard harness features — workspaces, deep conversation search, and branching sessions — remain fully intact: the plugin reuses and enhances them rather than reinventing them.
 
-## Установка
+---
+
+## Installation
+
+Install via the `dsh` CLI for your web profile:
 
 ```bash
 dsh plugin --profile web add @goodandready/dsh-session-control
 ```
 
-## Как вернуть штатную панель
+Restart the DeepSeek Harness web profile to activate the bundle patch.
+
+---
+
+## How to Restore the Stock Sidebar
+
+To revert to the stock sidebar at any time:
 
 ```bash
 dsh plugin --profile web remove @goodandready/dsh-session-control
 ```
 
-Штатный ряд `ui-workspace` включается обратно, панель возвращается к исходному
-виду. Закрепления и скрытия остаются в настройках и подхватятся, если плагин
-поставить снова.
+The stock `ui-workspace` row is instantly re-enabled, returning the sidebar to its default look. All pinned and hidden session preferences are preserved in host storage and will seamlessly reapply if the plugin is installed again.
 
-## Возможности
+---
 
-**Закрепление.** Нужные диалоги отдельной группой сверху, общей на всю панель.
-Переживают перезагрузку, смену браузера и устройство: настройки хранятся на
-хосте.
+## Features
 
-**Поиск с фрагментом.** Ядро ищет по содержимому диалогов и возвращает кусок
-текста вокруг совпадения — плагин показывает его второй строкой, поэтому видно,
-чем именно нашлась строка, без открытия сессии.
+### 📌 Pinned Sessions
+Pin important conversations to a dedicated, globally visible top group above workspaces. Pinned sessions survive page reloads, browser switches, and device migrations because configuration is persisted in host storage.
 
-**Архив по периодам.** Сегодня, на этой неделе, в этом месяце, раньше.
-Свёрнутый период не рисуется вовсе, поэтому сотни архивных строк не попадают в
-разметку разом. При активном поиске периоды раскрываются, чтобы совпадения не
-прятались за свёрнутым заголовком.
+### 🔍 Search with Contextual Snippets
+The core searches conversation contents and returns context around the matching query — `dsh-session-control` displays this preview as a second line under the session title so you immediately see why a conversation matched without opening it.
 
-**Расшифровка архивной сессии.** Заархивированную сессию нельзя открыть в
-беседе — ядро снимает выбор с такой сессии. Плагин показывает её содержимое
-отдельным окном, только на чтение.
+### 🗄️ Period-Based Archive
+Organized into intuitive collapsible periods: *Today*, *This Week*, *This Month*, and *Older*. Collapsed periods are unmounted from the DOM, preventing performance degradation even with thousands of historical sessions. Active search automatically expands relevant periods.
 
-**Скрытие пустых.** Сессии без единого сообщения непрерывно создают расписания,
-мессенджеры и доски. Они не показываются; текущая сессия не прячется никогда,
-даже пустая. Переключатель в карточке настроек возвращает прежнее поведение.
+### 📜 Read-Only Archived Transcript Viewer
+Archived sessions cannot be opened for active chatting in the core. The plugin provides an isolated, read-only transcript viewer modal via `GET /dsh-session-control/transcript?session=<id>` to inspect past agent turns, tools called, and user prompts safely.
 
-**Обратимое скрытие.** Своё, в отличие от ядрового архива: скрытое возвращается
-одним нажатием.
+### 🧹 Automatic Noise Reduction (Hide Blank Sessions)
+Automated schedulers, messenger gateways, and kanban boards continuously spawn sessions without messages. Blank sessions are hidden by default to keep the sidebar clean. The active session is never hidden even if empty. Toggleable via settings.
 
-**Множественный выбор.** Галочка при наведении, Shift берёт диапазон. Над
-выбранным доступны скрытие, возврат и закрепление.
+### 👁️ Reversible Session Hiding
+Unlike core archiving which is one-way, `dsh-session-control` offers lightweight reversible hiding for active sessions you temporarily want out of view.
 
-**Переименование по месту.** Двойной клик по заголовку или F2.
+### ☑️ Multi-Select & Batch Operations
+Hover checkboxes and Shift+Click range selection allow batch hiding, unhiding, and pinning of dozens of sessions simultaneously.
 
-## Настройки
+### ✏️ In-Place Inline Renaming
+Rename conversations instantly with a double click on the title or by pressing `F2`.
 
-Карточка в «Настройки → Плагины → Настройки плагинов». Пространство настроек —
-`dsh-session-control`:
+---
 
-| Поле | Смысл |
-|---|---|
-| `pinned` | закреплённые сессии, порядок массива = порядок в панели |
-| `hidden` | скрытые сессии |
-| `hideBlank` | прятать сессии без сообщений (по умолчанию да) |
+## Configuration
 
-Настройки хранятся на хосте, поэтому переживают смену браузера и устройство.
+Navigate to **Settings → Plugins → Plugin Settings → Session Control**:
 
-## Чего плагин не умеет
+| Setting | Type | Default | Description |
+|---|---|---|---|
+| `pinned` | `string[]` | `[]` | Array of pinned session IDs (array order determines display order) |
+| `hidden` | `string[]` | `[]` | Array of reversibly hidden session IDs |
+| `hideBlank` | `boolean` | `true` | Automatically hide sessions with zero messages |
 
-**Переносить диалог в другую рабочую папку.** Рабочая папка — это каталог, а
-членство сессии выводится из её рабочего каталога: реестр отвергает сессию, чей
-`cwd` не совпадает с путём папки. Это не пробел в API, а устройство модели, и
-поэтому такого пункта нет и в штатной панели.
+All settings are stored on the host and synchronize across client instances.
 
-**Возвращать из архива.** Ядро умеет только помещать в архив; метода возврата в
-API нет. Архивная сессия доступна на чтение, но вернуть её в папку нельзя.
+---
 
-**Читать очень старые журналы.** Часть архивных сессий хранится в раннем
-формате, который ядро отказывается читать. Такие показываются с пояснением, а
-не с ложным «нет сообщений».
+## Intentional Constraints
 
-**Удалять сессии.** Удаления нет ни в одном публичном интерфейсе ядра, и плагин
-его не изобретает.
+* **No cross-workspace session moving:** Workspaces represent distinct disk directories. Session membership is derived directly from the session's working directory (`cwd`). The core registry strictly enforces this binding.
+* **No unarchiving:** DeepSeek Harness core provides an archive operation but no unarchive API method. Archived sessions remain accessible via the read-only transcript viewer.
+* **Legacy log format handling:** Older legacy session logs that cannot be deserialized by the core are gracefully flagged with descriptive notices rather than displaying a false "no messages" state.
+* **No session hard deletion:** Session deletion is not exposed in public harness APIs, and the plugin adheres strictly to safe API contracts.
 
-## Устройство
+---
 
-Плагин собран из двух независимых половин, и это требование безопасности, а не
-украшение архитектуры.
+## Architecture & Reliability
 
-Заменяемый ядровый модуль попутно отдаёт служебный сервис `uiWorkspace`,
-который стоит в обязательных зависимостях у модулей боковой панели и интерфейса
-беседы. Если его не отдать, приложение не поднимется вовсе.
+The plugin utilizes a decoupled **two-half architecture** for maximum resilience:
 
-- **Половина «сервис»** отдаёт `uiWorkspace` и корневой хук списка папок. Без
-  React, без логики плагина, без настроек.
-- **Половина «интерфейс»** — список, расшифровка, карточка настроек. Целиком в
-  защитной обёртке.
+1. **Service Half (`uiWorkspace` Provider):**
+   * The replaced core `ui-workspace` module exports a required service `uiWorkspace` that is an essential dependency for `dsh-client-ui-sidebar` and `dsh-client-ui-conversation`.
+   * The plugin's service half delivers this service and root hooks cleanly with zero React rendering and zero plugin logic overhead.
+2. **Interface Half (UI & Views):**
+   * Encapsulates the custom workspace tree, search results, transcript modal, and settings card.
+   * Completely wrapped in defensive error boundaries. If a UI exception occurs, the main sidebar, conversation pane, and settings remain fully operational.
+3. **Server Route:**
+   * Exposes `GET /dsh-session-control/transcript` to parse and stream archived JSONL session logs safely without loading heavy unneeded payloads.
 
-Отказ интерфейса оставляет тело панели пустым, но панель, настройки и беседа
-продолжают работать.
+---
 
-Серверная половина добавляет один маршрут — расшифровку архивной сессии. Все
-остальные действия идут через штатные вызовы ядра.
+## UI Localization
 
-## Язык интерфейса
+The plugin core ships with English strings by default. Multilingual localizations (including Russian and Chinese) are loaded through language packs (such as `@goodandready/dsh-russian-lang`). Dictionary registration is fail-safe and never degrades sidebar functionality.
 
-Плагин везёт только английский. Переводы поставляются отдельным языковым
-плагином; регистрация словаря защищена и не может уронить панель, если
-пространство уже занято.
+---
 
-## Совместимость
+## Compatibility
 
-Проверен на ядрах `0.1.2-rc.1` и `0.1.3-alpha.1`. Плагин опирается на контракт
-слотов боковой панели и на поверхность сервиса `uiWorkspace`; при смене этого
-контракта потребуется правка.
+- Tested with DeepSeek Harness `0.1.2-rc.1` and `0.1.3-alpha.1`.
+- Compatible with Node.js `^20.19.0` or `>=22.12.0`.
+- Seamlessly integrates alongside `@goodandready/dsh-lanmode`, `@goodandready/dsh-kanban`, `@goodandready/dsh-cron`, and other DSH plugins.
 
-Поверхность хранилища сессий у разных выпусков ядра различается, поэтому плагин
-спрашивает бэкенд, какие методы у него есть, а не полагается на номер версии.
+---
 
-## Лицензия
+## License
 
-MIT
+MIT © GoodAndReady
