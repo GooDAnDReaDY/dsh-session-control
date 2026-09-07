@@ -96,7 +96,10 @@ A session cannot be moved between workspaces — membership is derived from its 
 directory, and the core rejects any session whose `cwd` does not match the folder path.
 Labels give the grouping axis the folders cannot: assign one from the row menu or to a
 whole selection at once, then filter the panel — archive included — by clicking a chip
-above the list. A label that loses its last session disappears on its own.
+above the list. The same menu removes it again — the entry reads *Remove from “name”*,
+so the action is named, not hidden behind a checkmark. Under an active label filter the
+bulk bar can strip that label from a whole selection at once. A label that loses its last
+session disappears on its own.
 
 ### 🧾 Names Derived From Your First Message
 Without a stored title the core shows the project folder name, so every conversation in a
