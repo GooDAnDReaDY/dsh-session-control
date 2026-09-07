@@ -34,7 +34,7 @@ Replacement is intentional and architecturally required: the `sidebar.workspaces
 | **In-Place Rename** | ⚠️ Modal prompt | ✅ Inline double-click or F2 edit |
 | **Cross-Folder Grouping** | ❌ Impossible (membership follows the working directory) | ✅ Own labels, independent of folders |
 | **Conversation Names** | ⚠️ Project folder name for every untitled session | ✅ Derived from the first message you sent |
-| **Keyboard Navigation** | ❌ None | ✅ `Ctrl+K` quick jump across active and archived sessions |
+| **Keyboard Navigation** | ❌ None | ✅ `Alt+K` quick jump across active and archived sessions |
 | **Taking Content Out** | ❌ Impossible | ✅ Copy or save any transcript as Markdown |
 
 > Standard harness features — workspaces, deep conversation search, and branching sessions — remain fully intact: the plugin reuses and enhances them rather than reinventing them.
@@ -108,8 +108,10 @@ uses it as the label. No model call and no cost: the text is already in the sess
 Renaming always wins — once you name a conversation, the derived label is gone. Only the
 rows currently on screen are resolved, so collapsed sections cost nothing.
 
-### ⌨️ Quick Jump (`Ctrl+K`)
+### ⌨️ Quick Jump (`Alt+K`)
 Opens a palette over the interface that searches titles and message contents at once.
+`Alt` rather than `Ctrl`: browsers keep `Ctrl+K` for themselves and never hand it to the
+page. The Cyrillic layout is handled too, so the physical key works either way.
 Arrows move, `Enter` opens, `Esc` closes and returns the focus where it was. An archived
 result opens as a transcript, exactly as it does in the list.
 
