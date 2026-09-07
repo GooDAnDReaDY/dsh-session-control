@@ -32,6 +32,10 @@ Replacement is intentional and architecturally required: the `sidebar.workspaces
 | **Reversible Hiding** | ❌ Only irreversible archive | ✅ Reversible one-click hide / unhide |
 | **Active Session Indicator** | ❌ Not indicated | ✅ Live running pulse dot in row |
 | **In-Place Rename** | ⚠️ Modal prompt | ✅ Inline double-click or F2 edit |
+| **Cross-Folder Grouping** | ❌ Impossible (membership follows the working directory) | ✅ Own labels, independent of folders |
+| **Conversation Names** | ⚠️ Project folder name for every untitled session | ✅ Derived from the first message you sent |
+| **Keyboard Navigation** | ❌ None | ✅ `Ctrl+K` quick jump across active and archived sessions |
+| **Taking Content Out** | ❌ Impossible | ✅ Copy or save any transcript as Markdown |
 
 > Standard harness features — workspaces, deep conversation search, and branching sessions — remain fully intact: the plugin reuses and enhances them rather than reinventing them.
 
@@ -87,6 +91,30 @@ Hover checkboxes and Shift+Click range selection allow batch hiding, unhiding, a
 ### ✏️ In-Place Inline Renaming
 Rename conversations instantly with a double click on the title or by pressing `F2`.
 
+### 🏷️ Labels
+A session cannot be moved between workspaces — membership is derived from its working
+directory, and the core rejects any session whose `cwd` does not match the folder path.
+Labels give the grouping axis the folders cannot: assign one from the row menu or to a
+whole selection at once, then filter the panel — archive included — by clicking a chip
+above the list. A label that loses its last session disappears on its own.
+
+### 🧾 Names Derived From Your First Message
+Without a stored title the core shows the project folder name, so every conversation in a
+folder looks the same. The plugin reads the first message you sent in that session and
+uses it as the label. No model call and no cost: the text is already in the session log.
+Renaming always wins — once you name a conversation, the derived label is gone. Only the
+rows currently on screen are resolved, so collapsed sections cost nothing.
+
+### ⌨️ Quick Jump (`Ctrl+K`)
+Opens a palette over the interface that searches titles and message contents at once.
+Arrows move, `Enter` opens, `Esc` closes and returns the focus where it was. An archived
+result opens as a transcript, exactly as it does in the list.
+
+### 📤 Markdown Export
+The transcript window can copy the conversation to the clipboard or save it as a `.md`
+file. A truncated transcript says so in the export itself, so a fragment is never mistaken
+for the whole conversation.
+
 ---
 
 ## Configuration
@@ -98,6 +126,7 @@ Navigate to **Settings → Plugins → Plugin Settings → Session Control**:
 | `pinned` | `string[]` | `[]` | Array of pinned session IDs (array order determines display order) |
 | `hidden` | `string[]` | `[]` | Array of reversibly hidden session IDs |
 | `hideBlank` | `boolean` | `true` | Automatically hide sessions with zero messages |
+| `labels` | `Record<string, string[]>` | `{}` | Label name to the session IDs carrying it |
 
 All settings are stored on the host and synchronize across client instances.
 
