@@ -1,13 +1,39 @@
-# @goodandready/dsh-session-control
+# 📦 @goodandready/dsh-session-control
 
-[English](README.md) | [Русский](docs/README.ru.md) | [中文](docs/README.zh.md)
+<div align="center">
 
-[![npm version](https://img.shields.io/npm/v/@goodandready/dsh-session-control.svg?style=flat-square)](https://www.npmjs.com/package/@goodandready/dsh-session-control)
-[![npm downloads](https://img.shields.io/npm/dm/@goodandready/dsh-session-control.svg?style=flat-square)](https://www.npmjs.com/package/@goodandready/dsh-session-control)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](https://opensource.org/licenses/MIT)
-[![DeepSeek Harness](https://img.shields.io/badge/DSH-Plugin-blue.svg?style=flat-square)](https://goodandready.app)
+<h3>Advanced Sidebar Session Management, Pinning, Full-Text Search & Transcripts Viewer for DeepSeek Harness</h3>
 
-Advanced session management for the **DeepSeek Harness** sidebar: pin essential conversations, search conversation contents with match snippets, read archived transcripts in an isolated modal, hide noise, and manage multiple sessions with bulk actions.
+<p align="center">
+  <a href="https://www.npmjs.com/package/@goodandready/dsh-session-control"><img src="https://img.shields.io/npm/v/@goodandready/dsh-session-control.svg?style=for-the-badge&color=6366f1&labelColor=1e1b4b" alt="npm version"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-10b981.svg?style=for-the-badge&color=10b981&labelColor=064e3b" alt="license"></a>
+  <a href="https://github.com/topics/dsh-plugin"><img src="https://img.shields.io/badge/DSH-Plugin-8b5cf6.svg?style=for-the-badge&labelColor=2e1065" alt="DSH Plugin"></a>
+  <a href="https://nodejs.org"><img src="https://img.shields.io/badge/Node-20%2B-f59e0b.svg?style=for-the-badge&labelColor=451a03" alt="Node version"></a>
+</p>
+
+<!-- Showcase Button -->
+<p align="center">
+  <a href="https://goodandready.app/"><img src="https://img.shields.io/badge/All_Author_Projects-goodandready.app-ff4500.svg?style=for-the-badge&logo=rocket&logoColor=white&labelColor=1a1a2e" alt="All Author Projects"></a>
+</p>
+
+<p align="center">
+  <a href="README.md"><b>🇬🇧 English</b></a> •
+  <a href="README.ru.md"><b>🇷🇺 Русский</b></a> •
+  <a href="README.zh.md"><b>🇨🇳 中文说明</b></a>
+</p>
+
+<!-- Mandatory project support block -->
+<table align="center">
+  <tr>
+    <td align="center">
+      ⭐ <strong>If you like this plugin, please star it on GitHub</strong> — it shows me that the plugin is useful to you and motivates me to keep developing it.
+      <br><br>
+      🐛 <strong>If you find a bug or would like to request a feature</strong>, open a GitHub issue in any language — I will review your proposal and implement useful suggestions in a future plugin version.
+    </td>
+  </tr>
+</table>
+
+</div>
 
 ---
 
