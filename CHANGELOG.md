@@ -3,6 +3,22 @@
 Формат — [Keep a Changelog](https://keepachangelog.com/ru/1.1.0/),
 версии — [SemVer](https://semver.org/lang/ru/).
 
+## [0.1.3] — 2026-09-13
+
+### Fixed
+
+- Adapted `readTranscript` and `canRead` to modern DSH core (0.1.5-rc.2+) descriptor-based
+  `sessionPersistence.open` / `handle.read` API with proper resource cleanup, resolving HTTP 501
+  failures on `/dsh-session-control/titles` and `/dsh-session-control/transcript` (#23).
+
+### Added
+
+- Category filter chips (All, Pinned, Tags, Archived) in the Alt+K quick jump palette (#24).
+- Turns and activity count badges in session rows (#25).
+- Clean session duplication (Fork Clean) preserving workspace settings without message history (#26).
+- Bulk actions bar support for batch permanent archiving and batch Markdown export with table of contents (#27).
+- Full Chinese (zh) localization dictionary registered alongside English (en).
+
 ## [0.1.2] — 2026-09-07
 
 ### Added

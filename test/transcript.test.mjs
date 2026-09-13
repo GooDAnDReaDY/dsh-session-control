@@ -100,3 +100,35 @@ test('сообщение пользователя читается и из data.
   const вложенная = { type: 'user/message', time: 2, data: { message: { content: [{ type: 'text', text: 'внутри' }] } } }
   assert.deepEqual(transcriptFromEvents([прямая, вложенная]).map((m) => m.text), ['прямо', 'внутри'])
 })
+
+import { batchTranscriptToMarkdown } from '../lib/transcript.js'
+
+test('batchTranscriptToMarkdown собирает несколько сессий в общий документ с оглавлением', () => {
+  const items = [
+    {
+      title: 'Диалог 1',
+      messages: [
+        { role: 'user', text: 'Первый вопрос', time: 1 },
+        { role: 'assistant', text: 'Первый ответ', time: 2 },
+      ],
+      info: { total: 2, truncated: false },
+    },
+    {
+      title: 'Диалог 2',
+      messages: [
+        { role: 'user', text: 'Второй вопрос', time: 10 },
+      ],
+      info: { total: 1, truncated: false },
+    },
+  ]
+
+  const md = batchTranscriptToMarkdown(items)
+  assert.ok(md.includes('# Combined Session Export'))
+  assert.ok(md.includes('## Table of Contents'))
+  assert.ok(md.includes('1. Диалог 1'))
+  assert.ok(md.includes('2. Диалог 2'))
+  assert.ok(md.includes('## 1. Диалог 1'))
+  assert.ok(md.includes('## 2. Диалог 2'))
+  assert.ok(md.includes('Первый вопрос'))
+  assert.ok(md.includes('Второй вопрос'))
+})
