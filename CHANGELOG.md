@@ -3,6 +3,19 @@
 Формат — [Keep a Changelog](https://keepachangelog.com/ru/1.1.0/),
 версии — [SemVer](https://semver.org/lang/ru/).
 
+## [0.1.4] — 2026-09-14
+
+### Fixed
+
+- Added required `data-dsh-plugin="dsh-session-control"` attribute on dynamic `<style>` tag to prevent style wipes by neighboring plugins during HMR / reloads per `dsh-plugin-authoring` (#29).
+- Translated internal runtime `console.warn` / `console.error` messages and Cordis `ctx.effect` labels to canonical English (#29).
+
+### Added
+
+- Mermaid (`graph LR`) architecture flow diagram in `README.md`, `README.ru.md`, and `README.zh.md` (#29).
+- Dedicated HTTP API Routes Reference section in all three README files (#29).
+- Updated `docs/design/DESIGN.md` status, API surfaces, and locked design decisions (#29).
+
 ## [0.1.3] — 2026-09-13
 
 ### Fixed

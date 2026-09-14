@@ -18,8 +18,8 @@
 
 <p align="center">
   <a href="README.md"><b>🇬🇧 English</b></a> •
-  <a href="README.ru.md"><b>🇷🇺 Русский</b></a> •
-  <a href="README.zh.md"><b>🇨🇳 中文说明</b></a>
+  <a href="README.zh.md"><b>🇨🇳 中文说明</b></a> •
+  <a href="README.ru.md"><b>🇷🇺 Русский</b></a>
 </p>
 
 <!-- 强制性项目支持模块 -->
@@ -44,6 +44,34 @@
 替换是架构上的必然要求：Harness 核心将 `sidebar.workspaces` 插槽声明为 `kind: "single"`，不允许注册多个并列组件，且侧边栏主体没有其他扩展插槽。
 
 ---
+
+## 架构与数据流
+
+```mermaid
+graph LR
+    subgraph Browser ["浏览器客户端 (lib/client.js)"]
+        UIW["uiWorkspace 服务\n(Cordis 服务替代)"]
+        PANEL["SessionListPanel\n(sidebar.workspaces 插槽)"]
+        JUMP["QuickJump 弹窗\n(Alt+K 快捷键)"]
+        VIEWER["ArchiveViewer 弹窗\n(JSONL 记录查看器)"]
+        SETTINGS["SettingsCard\n(settings.plugin.item)"]
+    end
+
+    subgraph Host ["Node.js 服务端 (lib/index.js & transcript.js)"]
+        SERVER["Cordis WebServer\nHTTP 路由"]
+        STORE["DSH 会话持久化\n(句柄读取 / 日志)"]
+        TRANS["纯文本记录解析器\n(JSONL -> Markdown)"]
+    end
+
+    PANEL -->|"切换 / 连接 / 重命名"| UIW
+    JUMP -->|"筛选并快速跳转"| UIW
+    VIEWER -->|"GET /dsh-session-control/transcript"| SERVER
+    PANEL -->|"GET /dsh-session-control/titles"| SERVER
+    PANEL -->|"POST /dsh-session-control/export-batch"| SERVER
+    SERVER -->|"读取会话日志"| STORE
+    STORE -->|"句柄 / 原始事件"| TRANS
+    TRANS -->|"格式化记录 / Markdown"| SERVER
+```
 
 ## 功能对比：原生侧边栏 vs dsh-session-control
 
@@ -163,6 +191,16 @@ dsh plugin --profile web remove @goodandready/dsh-session-control
 * **不支持物理硬删除：** 核心公共接口未开放硬删除方法，插件严格遵循安全规范。
 
 ---
+
+## HTTP API 路由参考
+
+插件的服务端通过 Cordis `webServer` 提供以下三个 HTTP 接口：
+
+| 方法 | 路由 | 查询参数 / 请求体 | 响应格式 | 说明 |
+|---|---|---|---|---|
+| `GET` | `/dsh-session-control/transcript` | `session=<id>`, `format=<json\|md>`, `title=<str>` | JSON 或 Markdown | 通过句柄读取会话 JSONL 日志，返回结构化消息事件（角色、文本、工具调用）或格式化 Markdown。 |
+| `GET` | `/dsh-session-control/titles` | `sessions=<id1,id2,...>` | JSON `{"ok": true, "titles": { "<id>": "<标题>" }}` | 从用户的第一条发言中推导会话标题（单次最多 60 个 ID，进程内存缓存）。 |
+| `POST` | `/dsh-session-control/export-batch` | 请求体: `{"sessions": [{"id": "...", "title": "..."}]}` | Markdown (`text/markdown`) | 批量导出多个会话并生成带有目录的统一 Markdown 文档。 |
 
 ## 架构与可靠性
 
