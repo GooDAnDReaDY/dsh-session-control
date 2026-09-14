@@ -18,8 +18,8 @@
 
 <p align="center">
   <a href="README.md"><b>🇬🇧 English</b></a> •
-  <a href="README.ru.md"><b>🇷🇺 Русский</b></a> •
-  <a href="README.zh.md"><b>🇨🇳 中文说明</b></a>
+  <a href="README.zh.md"><b>🇨🇳 中文说明</b></a> •
+  <a href="README.ru.md"><b>🇷🇺 Русский</b></a>
 </p>
 
 <!-- Обязательный блок поддержки проекта -->
@@ -44,6 +44,34 @@
 Замена необходима архитектурно: слот `sidebar.workspaces` объявлен ядром как `kind: "single"`, второго регистранта у него не бывает, а другого слота в теле панели нет.
 
 ---
+
+## Архитектура и поток данных
+
+```mermaid
+graph LR
+    subgraph Browser ["Браузерный клиент (lib/client.js)"]
+        UIW["Служба uiWorkspace\n(заместитель сервиса Cordis)"]
+        PANEL["SessionListPanel\n(слот sidebar.workspaces)"]
+        JUMP["Окно QuickJump\n(сочетание Alt+K)"]
+        VIEWER["Модалка ArchiveViewer\n(просмотрщик JSONL)"]
+        SETTINGS["SettingsCard\n(settings.plugin.item)"]
+    end
+
+    subgraph Host ["Серверная часть Node.js (lib/index.js & transcript.js)"]
+        SERVER["Cordis WebServer\nHTTP-маршруты"]
+        STORE["DSH Session Persistence\n(дескрипторы / логи)"]
+        TRANS["Чистый парсер расшифровок\n(JSONL -> Markdown)"]
+    end
+
+    PANEL -->|"переключение / переименование"| UIW
+    JUMP -->|"фильтрация и быстрый переход"| UIW
+    VIEWER -->|"GET /dsh-session-control/transcript"| SERVER
+    PANEL -->|"GET /dsh-session-control/titles"| SERVER
+    PANEL -->|"POST /dsh-session-control/export-batch"| SERVER
+    SERVER -->|"чтение логов сессии"| STORE
+    STORE -->|"дескриптор / события"| TRANS
+    TRANS -->|"структурированный текст / markdown"| SERVER
+```
 
 ## Сравнение со штатной панелью
 
@@ -171,6 +199,16 @@ dsh plugin --profile web remove @goodandready/dsh-session-control
 * **Удаление сессий отсутствует:** Удаление не предусмотрено в публичном API ядра, и плагин строго соблюдает контракт безопасности.
 
 ---
+
+## Справочник HTTP API маршрутов
+
+Серверная половина плагина предоставляет три выделенных HTTP-маршрута через Cordis `webServer`:
+
+| Метод | Маршрут | Параметры (Query / Body) | Формат ответа | Описание |
+|---|---|---|---|---|
+| `GET` | `/dsh-session-control/transcript` | `session=<id>`, `format=<json\|md>`, `title=<str>` | JSON или Markdown | Читает JSONL-журнал сессии через дескриптор. Возвращает разобранные события диалога или готовый Markdown. |
+| `GET` | `/dsh-session-control/titles` | `sessions=<id1,id2,...>` | JSON `{"ok": true, "titles": { "<id>": "<подпись>" }}` | Выводит подписи диалогов из первой фразы пользователя (до 60 id в запросе; результат кэшируется в памяти). |
+| `POST` | `/dsh-session-control/export-batch` | Body: `{"sessions": [{"id": "...", "title": "..."}]}` | Markdown (`text/markdown`) | Формирует единый объединенный Markdown-файл нескольких сессий со сквозным оглавлением. |
 
 ## Архитектура и надежность
 

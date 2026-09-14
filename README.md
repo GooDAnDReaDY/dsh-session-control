@@ -18,8 +18,8 @@
 
 <p align="center">
   <a href="README.md"><b>🇬🇧 English</b></a> •
-  <a href="README.ru.md"><b>🇷🇺 Русский</b></a> •
-  <a href="README.zh.md"><b>🇨🇳 中文说明</b></a>
+  <a href="README.zh.md"><b>🇨🇳 中文说明</b></a> •
+  <a href="README.ru.md"><b>🇷🇺 Русский</b></a>
 </p>
 
 <!-- Mandatory project support block -->
@@ -44,6 +44,34 @@ The plugin **replaces the body of the sidebar** — the section containing the w
 Replacement is intentional and architecturally required: the `sidebar.workspaces` slot is declared by the harness core as `kind: "single"`, which does not allow secondary registrants, and no other extension slots exist in the sidebar body.
 
 ---
+
+## Architecture & Data Flow
+
+```mermaid
+graph LR
+    subgraph Browser ["Browser Client (lib/client.js)"]
+        UIW["uiWorkspace Service\n(Cordis Service Substitute)"]
+        PANEL["SessionListPanel\n(sidebar.workspaces slot)"]
+        JUMP["QuickJump Modal\n(Alt+K)"]
+        VIEWER["ArchiveViewer Modal\n(JSONL Viewer)"]
+        SETTINGS["SettingsCard\n(settings.plugin.item)"]
+    end
+
+    subgraph Host ["Node.js Host (lib/index.js & transcript.js)"]
+        SERVER["Cordis WebServer\nHTTP Routes"]
+        STORE["DSH Session Persistence\n(Descriptor handle / Logs)"]
+        TRANS["Pure Transcript Parser\n(JSONL -> Markdown)"]
+    end
+
+    PANEL -->|"connect / switch / rename"| UIW
+    JUMP -->|"fast filter & jump"| UIW
+    VIEWER -->|"GET /dsh-session-control/transcript"| SERVER
+    PANEL -->|"GET /dsh-session-control/titles"| SERVER
+    PANEL -->|"POST /dsh-session-control/export-batch"| SERVER
+    SERVER -->|"read session log"| STORE
+    STORE -->|"raw events / descriptor"| TRANS
+    TRANS -->|"formatted transcript / markdown"| SERVER
+```
 
 ## Comparison: Stock Sidebar vs. dsh-session-control
 
@@ -171,6 +199,16 @@ All settings are stored on the host and synchronize across client instances.
 * **No session hard deletion:** Session deletion is not exposed in public harness APIs, and the plugin adheres strictly to safe API contracts.
 
 ---
+
+## HTTP API Routes Reference
+
+The host half of the plugin exposes three dedicated endpoints via Cordis `webServer`:
+
+| Method | Endpoint | Query / Body Parameters | Response Format | Description |
+|---|---|---|---|---|
+| `GET` | `/dsh-session-control/transcript` | `session=<id>`, `format=<json\|md>`, `title=<str>` | JSON or Markdown | Reads session JSONL log via descriptor handle. Returns structured message events (role, text, tool calls) or compiled Markdown. |
+| `GET` | `/dsh-session-control/titles` | `sessions=<id1,id2,...>` | JSON `{"ok": true, "titles": { "<id>": "<title>" }}` | Infers conversational preview titles from the user's first prompt (up to 60 IDs per batch; cached in host process memory). |
+| `POST` | `/dsh-session-control/export-batch` | Body: `{"sessions": [{"id": "...", "title": "..."}]}` | Markdown (`text/markdown`) | Generates a combined Markdown export document with an automated Table of Contents. |
 
 ## Architecture & Reliability
 
