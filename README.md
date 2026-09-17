@@ -239,6 +239,7 @@ The host half of the plugin exposes three dedicated endpoints via Cordis `webSer
 | `GET` | `/dsh-session-control/sizes` | `sessions=<id1,id2,...>` | JSON `{"ok": true, "sizes": { "<id>": {...} }}` | Returns event count, log bytes and badge level per session (up to 60), from metadata only. |
 | `GET` | `/dsh-session-control/handoff` | `session=<id>&title=...&cwd=...` | JSON `{"ok": true, "handoff": {...}}` | Builds an instant handoff extract into a composer draft without invoking a model. |
 | `POST` | `/dsh-session-control/handoff-summary` | Body: `{"session": "...", "title": "...", "cwd": "..."}` | JSON `{"ok": true, "draft": "..."}` | Generates a model-assisted handoff summary draft; requires configured provider and model. |
+| `GET, POST` | `/api/dsh-session-control/update` | Header: `x-dsh-plugin-update: 1` (for POST) | JSON | Checks current/latest version from registry (GET) and performs in-app one-click update (POST; loopback and same-origin only). |
 
 ## Architecture & Reliability
 

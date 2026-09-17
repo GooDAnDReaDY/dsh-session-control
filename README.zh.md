@@ -222,6 +222,10 @@ DSH 的对话视图会把会话的全部事件同时保留在页面中。在超�
 | `GET` | `/dsh-session-control/transcript` | `session=<id>`, `format=<json\|md>`, `title=<str>` | JSON 或 Markdown | 通过句柄读取会话 JSONL 日志，返回结构化消息事件（角色、文本、工具调用）或格式化 Markdown。 |
 | `GET` | `/dsh-session-control/titles` | `sessions=<id1,id2,...>` | JSON `{"ok": true, "titles": { "<id>": "<标题>" }}` | 从用户的第一条发言中推导会话标题（单次最多 60 个 ID，进程内存缓存）。 |
 | `GET` | `/dsh-session-control/export-batch` | `sessions=<id1,id2,...>` | Markdown (`text/markdown`) | 批量导出多个会话并生成带有目录的统一 Markdown 文档。 |
+| `GET` | `/dsh-session-control/sizes` | `sessions=<id1,id2,...>` | JSON `{"ok": true, "sizes": { "<id>": {...} }}` | 获取列表行会话大小及事件数（最多 60 个会话），无需解压日志。 |
+| `GET` | `/dsh-session-control/handoff` | `session=<id>&title=...&cwd=...` | JSON `{"ok": true, "handoff": {...}}` | 快速生成新会话承接草稿，无需调用模型。 |
+| `POST` | `/dsh-session-control/handoff-summary` | Body: `{"session": "...", "title": "...", "cwd": "..."}` | JSON `{"ok": true, "draft": "..."}` | 使用模型提炼会话总结并在新会话中承接；需要配置提供商与模型。 |
+| `GET, POST` | `/api/dsh-session-control/update` | 请求头: `x-dsh-plugin-update: 1` (POST) | JSON | 检查当前版本与最新版本 (GET)，一键在线更新插件 (POST，仅限本地和同源请求)。 |
 
 ## 架构与可靠性
 
