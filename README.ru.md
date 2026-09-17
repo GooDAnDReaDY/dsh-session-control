@@ -239,6 +239,7 @@ dsh plugin --profile web remove @goodandready/dsh-session-control
 | `GET` | `/dsh-session-control/sizes` | `sessions=<id1,id2,...>` | JSON `{"ok": true, "sizes": { "<id>": {...} }}` | Размер и число событий для строк панели (до 60 сессий), без распаковки журналов. |
 | `GET` | `/dsh-session-control/handoff` | `session=<id>&title=...&cwd=...` | JSON `{"ok": true, "handoff": {...}}` | Мгновенный черновик переноса контекста в новую сессию без обращения к модели. |
 | `POST` | `/dsh-session-control/handoff-summary` | Body: `{"session": "...", "title": "...", "cwd": "..."}` | JSON `{"ok": true, "draft": "..."}` | Пересказ итогов сессии моделью; требует настройки провайдера и модели. |
+| `GET, POST` | `/api/dsh-session-control/update` | Заголовок: `x-dsh-plugin-update: 1` (для POST) | JSON | Проверка текущей и доступной версии (GET) и обновление плагина в один клик (POST; только loopback и same-origin). |
 
 ## Архитектура и надежность
 
