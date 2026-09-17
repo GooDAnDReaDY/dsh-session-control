@@ -25,7 +25,7 @@ test('isLoopbackAddress classifies IPv4, IPv6, and localhost variants', () => {
   assert.equal(isLoopbackAddress('127.0.0.1'), true)
   assert.equal(isLoopbackAddress('127.0.1.1'), true)
   assert.equal(isLoopbackAddress('::ffff:127.0.0.1'), true)
-  assert.equal(isLoopbackAddress('192.168.1.50'), false)
+  assert.equal(isLoopbackAddress('203.0.113.50'), false)
   assert.equal(isLoopbackAddress('10.0.0.1'), false)
   assert.equal(isLoopbackAddress(''), false)
   assert.equal(isLoopbackAddress(undefined), false)
@@ -37,7 +37,7 @@ test('isTrustedOrigin fail-closed on empty or malformed requests', () => {
   assert.equal(isTrustedOrigin(undefined), false)
   assert.equal(isTrustedOrigin({}), false)
   assert.equal(isTrustedOrigin({ headers: {} }), false)
-  assert.equal(isTrustedOrigin({ headers: {}, socket: { remoteAddress: '192.168.1.100' } }), false)
+  assert.equal(isTrustedOrigin({ headers: {}, socket: { remoteAddress: '203.0.113.100' } }), false)
 })
 
 test('guardRoute allows loopback address without explicit auth headers', () => {
@@ -69,7 +69,7 @@ test('guardRoute allows Bearer authorization token from external IP', () => {
   const ok = guardRoute({
     method: 'GET',
     headers: { authorization: 'Bearer test-token-12345' },
-    socket: { remoteAddress: '192.168.1.50' }
+    socket: { remoteAddress: '203.0.113.50' }
   }, res, 'GET')
 
   assert.equal(ok, true)
@@ -81,7 +81,7 @@ test('guardRoute allows session cookie from external IP', () => {
   const ok = guardRoute({
     method: 'GET',
     headers: { cookie: 'dsh_token=xyz987; theme=dark' },
-    socket: { remoteAddress: '192.168.1.50' }
+    socket: { remoteAddress: '203.0.113.50' }
   }, res, 'GET')
 
   assert.equal(ok, true)
@@ -93,7 +93,7 @@ test('guardRoute allows same-origin sec-fetch-site from external IP', () => {
   const ok = guardRoute({
     method: 'POST',
     headers: { 'sec-fetch-site': 'same-origin' },
-    socket: { remoteAddress: '192.168.1.50' }
+    socket: { remoteAddress: '203.0.113.50' }
   }, res, 'POST')
 
   assert.equal(ok, true)
@@ -108,7 +108,7 @@ test('guardRoute allows matching Origin and Host headers from external IP', () =
       origin: 'http://my-dsh.local:3000',
       host: 'my-dsh.local:3000'
     },
-    socket: { remoteAddress: '192.168.1.50' }
+    socket: { remoteAddress: '203.0.113.50' }
   }, res, 'GET')
 
   assert.equal(ok, true)
@@ -121,9 +121,9 @@ test('guardRoute allows sec-fetch-site none when host header is present', () => 
     method: 'GET',
     headers: {
       'sec-fetch-site': 'none',
-      host: '192.168.1.111:3000'
+      host: '198.51.100.10:3000'
     },
-    socket: { remoteAddress: '192.168.1.50' }
+    socket: { remoteAddress: '203.0.113.50' }
   }, res, 'GET')
 
   assert.equal(ok, true)
@@ -137,7 +137,7 @@ test('guardRoute rejects sec-fetch-site none when host header is missing', () =>
     headers: {
       'sec-fetch-site': 'none'
     },
-    socket: { remoteAddress: '192.168.1.50' }
+    socket: { remoteAddress: '203.0.113.50' }
   }, res, 'GET')
 
   assert.equal(ok, false)
@@ -165,10 +165,10 @@ test('guardRoute rejects cross-site sec-fetch-site with 403 Forbidden', () => {
     method: 'GET',
     headers: {
       'sec-fetch-site': 'cross-site',
-      host: '192.168.1.111:3000',
+      host: '198.51.100.10:3000',
       origin: 'http://attacker.com'
     },
-    socket: { remoteAddress: '192.168.1.50' }
+    socket: { remoteAddress: '203.0.113.50' }
   }, res, 'GET')
 
   assert.equal(ok, false)
@@ -181,7 +181,7 @@ test('guardRoute rejects external request without headers or credentials (fail-c
   const ok = guardRoute({
     method: 'GET',
     headers: {},
-    socket: { remoteAddress: '192.168.1.50' }
+    socket: { remoteAddress: '203.0.113.50' }
   }, res, 'GET')
 
   assert.equal(ok, false)
