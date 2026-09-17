@@ -67,7 +67,7 @@ graph LR
     JUMP -->|"фильтрация и быстрый переход"| UIW
     VIEWER -->|"GET /dsh-session-control/transcript"| SERVER
     PANEL -->|"GET /dsh-session-control/titles"| SERVER
-    PANEL -->|"POST /dsh-session-control/export-batch"| SERVER
+    PANEL -->|"GET /dsh-session-control/export-batch"| SERVER
     SERVER -->|"чтение логов сессии"| STORE
     STORE -->|"дескриптор / события"| TRANS
     TRANS -->|"структурированный текст / markdown"| SERVER
@@ -235,7 +235,7 @@ dsh plugin --profile web remove @goodandready/dsh-session-control
 |---|---|---|---|---|
 | `GET` | `/dsh-session-control/transcript` | `session=<id>`, `format=<json\|md>`, `title=<str>` | JSON или Markdown | Читает JSONL-журнал сессии через дескриптор. Возвращает разобранные события диалога или готовый Markdown. |
 | `GET` | `/dsh-session-control/titles` | `sessions=<id1,id2,...>` | JSON `{"ok": true, "titles": { "<id>": "<подпись>" }}` | Выводит подписи диалогов из первой фразы пользователя (до 60 id в запросе; результат кэшируется в памяти). |
-| `POST` | `/dsh-session-control/export-batch` | Body: `{"sessions": [{"id": "...", "title": "..."}]}` | Markdown (`text/markdown`) | Формирует единый объединенный Markdown-файл нескольких сессий со сквозным оглавлением. |
+| `GET` | `/dsh-session-control/export-batch` | `sessions=<id1,id2,...>` | Markdown (`text/markdown`) | Формирует единый объединенный Markdown-файл нескольких сессий со сквозным оглавлением. |
 | `GET` | `/dsh-session-control/sizes` | `sessions=<id1,id2,...>` | JSON `{"ok": true, "sizes": { "<id>": {...} }}` | Размер и число событий для строк панели (до 60 сессий), без распаковки журналов. |
 | `GET` | `/dsh-session-control/handoff` | `session=<id>&title=...&cwd=...` | JSON `{"ok": true, "handoff": {...}}` | Мгновенный черновик переноса контекста в новую сессию без обращения к модели. |
 | `POST` | `/dsh-session-control/handoff-summary` | Body: `{"session": "...", "title": "...", "cwd": "..."}` | JSON `{"ok": true, "draft": "..."}` | Пересказ итогов сессии моделью; требует настройки провайдера и модели. |
