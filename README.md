@@ -236,12 +236,9 @@ The host half of the plugin exposes three dedicated endpoints via Cordis `webSer
 | `GET` | `/dsh-session-control/transcript` | `session=<id>`, `format=<json\|md>`, `title=<str>` | JSON or Markdown | Reads session JSONL log via descriptor handle. Returns structured message events (role, text, tool calls) or compiled Markdown. |
 | `GET` | `/dsh-session-control/titles` | `sessions=<id1,id2,...>` | JSON `{"ok": true, "titles": { "<id>": "<title>" }}` | Infers conversational preview titles from the user's first prompt (up to 60 IDs per batch; cached in host process memory). |
 | `POST` | `/dsh-session-control/export-batch` | Body: `{"sessions": [{"id": "...", "title": "..."}]}` | Markdown (`text/markdown`) | Generates a combined Markdown export document with an automated Table of Contents. |
-
-Session size and handoff routes:
-
-- `GET /dsh-session-control/sizes?sessions=<id,...>` — event count, log bytes and badge level per session (up to 60), from metadata only.
-- `GET /dsh-session-control/handoff?session=<id>&title=&cwd=` — instant handoff extract, no model.
-- `POST /dsh-session-control/handoff-summary` with `{ session, title, cwd }` — model-written summary; same-origin only, requires a configured provider and model.
+| `GET` | `/dsh-session-control/sizes` | `sessions=<id1,id2,...>` | JSON `{"ok": true, "sizes": { "<id>": {...} }}` | Returns event count, log bytes and badge level per session (up to 60), from metadata only. |
+| `GET` | `/dsh-session-control/handoff` | `session=<id>&title=...&cwd=...` | JSON `{"ok": true, "handoff": {...}}` | Builds an instant handoff extract into a composer draft without invoking a model. |
+| `POST` | `/dsh-session-control/handoff-summary` | Body: `{"session": "...", "title": "...", "cwd": "..."}` | JSON `{"ok": true, "draft": "..."}` | Generates a model-assisted handoff summary draft; requires configured provider and model. |
 
 ## Architecture & Reliability
 
