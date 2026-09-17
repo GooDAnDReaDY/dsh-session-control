@@ -3,14 +3,25 @@
 Формат — [Keep a Changelog](https://keepachangelog.com/ru/1.1.0/),
 версии — [SemVer](https://semver.org/lang/ru/).
 
-## [Unreleased]
+## [0.2.0] — 2026-09-17
 
 ### Added
 
-- Session size badges in the sidebar: yellow once a session is large, red once it is dangerous for the interface; event count shown as text, log size in the tooltip. Thresholds `sizeWarnEvents` / `sizeDangerEvents` in the settings card (#39).
-- **Continue in new session**: opens a new chat in the same workspace with an instant extract of the previous session placed into the composer as a draft; nothing is sent (#40).
-- **Continue with a model summary**: the same flow with a model-written summary; explicit click only, disabled until `handoffProvider` and `handoffModel` are set (#41).
-- Routes `GET /dsh-session-control/sizes`, `GET /dsh-session-control/handoff`, `POST /dsh-session-control/handoff-summary`.
+- Session size badges in the sidebar: warning (yellow) and danger (red) indicators based on event counts, preventing client browser tab hangs on unvirtualized chat lists (#39).
+- Configurable session size thresholds `sizeWarnEvents` (default 1500) and `sizeDangerEvents` (default 3000) in settings card (#39).
+- Instant conversation handoff ("Continue in new session") via draft staging into `conversation.input.dock` (#40).
+- Model-assisted handoff summary with configurable provider, model, token budget, and prompt (#41).
+- Built-in one-click plugin updater from settings card via `/api/dsh-session-control/update` (#32).
+- HTTP API endpoints: `GET /dsh-session-control/sizes`, `GET /dsh-session-control/handoff`, `POST /dsh-session-control/handoff-summary`, `POST /api/dsh-session-control/update`.
+- Comprehensive test suite covering route limits, size calculations, handoff extracts, and plugin updater (55 tests, 100% pass) (#36).
+
+### Changed
+
+- Package identity aligned to fully qualified scoped name `@goodandready/dsh-session-control` across all manifests and exports (#31).
+- Added fail-closed security guards (`guardRoute`) enforcing HTTP methods (405) and `sec-fetch-site` validation (403) across all HTTP endpoints (#33).
+- Replaced hardcoded CSS colors with native theme variables and `color-mix` for seamless light/dark mode adaptation (#38).
+- Translated all internal code comments to English and added regression test preventing Cyrillic characters in codebase (#34).
+- Formalized single-bundle zero-build architecture decision for `lib/client.js` in design contract (#37).
 
 ## [0.1.4] — 2026-09-14
 
