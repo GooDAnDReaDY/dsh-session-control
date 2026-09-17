@@ -1,6 +1,6 @@
 {
   "name": "@goodandready/dsh-session-control",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Session management for the DeepSeek Harness sidebar: pin conversations, search their contents, read archived transcripts and hide the noise",
   "license": "MIT",
   "type": "module",
@@ -15,7 +15,9 @@
     "cordis.patch.yml",
     "README.md",
     "CHANGELOG.md",
-    "LICENSE"
+    "LICENSE",
+    "README.ru.md",
+    "README.zh.md"
   ],
   "dsh": {
     "bundle": {
@@ -30,6 +32,7 @@
         "@deepseek-ai/dsh-client-connection",
         "@deepseek-ai/dsh-client-locale",
         "@deepseek-ai/dsh-client-ui-conversation",
+        "@deepseek-ai/dsh-client-ui-layout",
         "@deepseek-ai/dsh-client-ui-renderer",
         "@deepseek-ai/dsh-client-ui-session",
         "@deepseek-ai/dsh-client-ui-settings",
