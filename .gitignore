@@ -9,3 +9,8 @@ dist/
 credentials.yaml
 .DS_Store
 docs/superpowers/
+docs/plans/
+.planning/
+.worktrees/
+coverage/
+*.log

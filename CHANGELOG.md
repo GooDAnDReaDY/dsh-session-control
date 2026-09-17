@@ -3,6 +3,21 @@
 Формат — [Keep a Changelog](https://keepachangelog.com/ru/1.1.0/),
 версии — [SemVer](https://semver.org/lang/ru/).
 
+## [0.2.1] — 2026-09-18
+
+### Security
+
+- Enforced strict fail-closed source verification on transcript, title, batch, and size routes via `isTrustedOrigin` and `guardRoute` (#33).
+- Restricted HTTP methods with 405 Method Not Allowed responses, rejected non-loopback untrusted requests with 403 Forbidden (#33).
+
+### Fixed
+
+- Port session navigation, retention, clearing, and restoration to DSH alpha2 (`0.1.6-alpha.2`) Client Session API contract (#46).
+- Replaced stale `sessions.open(id)` and `sessions.clear()` calls with `uiWorkspace.openSession(id)` and session retention under `{ source: 'mainView' }` (#46).
+- Added `dsh.sessions.current` snapshot store integration for robust session restoration across page reloads (#46).
+- Fixed active session row indicator in `SessionListPanel` to observe session retention leases (`retainedBy.mainView`) (#46).
+- Injected `layout` service (`@deepseek-ai/dsh-client-ui-layout`) to properly handle workspace navigation abort signals (#46).
+
 ## [0.2.0] — 2026-09-17
 
 ### Added
