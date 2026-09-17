@@ -67,7 +67,7 @@ graph LR
     JUMP -->|"筛选并快速跳转"| UIW
     VIEWER -->|"GET /dsh-session-control/transcript"| SERVER
     PANEL -->|"GET /dsh-session-control/titles"| SERVER
-    PANEL -->|"POST /dsh-session-control/export-batch"| SERVER
+    PANEL -->|"GET /dsh-session-control/export-batch"| SERVER
     SERVER -->|"读取会话日志"| STORE
     STORE -->|"句柄 / 原始事件"| TRANS
     TRANS -->|"格式化记录 / Markdown"| SERVER
@@ -221,7 +221,7 @@ DSH 的对话视图会把会话的全部事件同时保留在页面中。在超�
 |---|---|---|---|---|
 | `GET` | `/dsh-session-control/transcript` | `session=<id>`, `format=<json\|md>`, `title=<str>` | JSON 或 Markdown | 通过句柄读取会话 JSONL 日志，返回结构化消息事件（角色、文本、工具调用）或格式化 Markdown。 |
 | `GET` | `/dsh-session-control/titles` | `sessions=<id1,id2,...>` | JSON `{"ok": true, "titles": { "<id>": "<标题>" }}` | 从用户的第一条发言中推导会话标题（单次最多 60 个 ID，进程内存缓存）。 |
-| `POST` | `/dsh-session-control/export-batch` | 请求体: `{"sessions": [{"id": "...", "title": "..."}]}` | Markdown (`text/markdown`) | 批量导出多个会话并生成带有目录的统一 Markdown 文档。 |
+| `GET` | `/dsh-session-control/export-batch` | `sessions=<id1,id2,...>` | Markdown (`text/markdown`) | 批量导出多个会话并生成带有目录的统一 Markdown 文档。 |
 
 ## 架构与可靠性
 

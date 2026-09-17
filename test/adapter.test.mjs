@@ -31,3 +31,13 @@ test('canRead отклоняет неподходящий или пустой st
   assert.equal(canRead({}), false)
   assert.equal(canRead({ resolveLog: async () => {} }), false)
 })
+
+import fs from 'node:fs'
+
+test('export const name in lib/index.js matches package.json name', () => {
+  const pkg = JSON.parse(fs.readFileSync(new URL('../package.json', import.meta.url), 'utf8'))
+  const indexSource = fs.readFileSync(new URL('../lib/index.js', import.meta.url), 'utf8')
+  const match = indexSource.match(/export const name = ['"]([^'"]+)['"]/)
+  assert.ok(match, 'export const name must be defined')
+  assert.equal(match[1], pkg.name)
+})
