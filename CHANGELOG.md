@@ -3,6 +3,15 @@
 Формат — [Keep a Changelog](https://keepachangelog.com/ru/1.1.0/),
 версии — [SemVer](https://semver.org/lang/ru/).
 
+## [Unreleased]
+
+### Added
+
+- Session size badges in the sidebar: yellow once a session is large, red once it is dangerous for the interface; event count shown as text, log size in the tooltip. Thresholds `sizeWarnEvents` / `sizeDangerEvents` in the settings card (#39).
+- **Continue in new session**: opens a new chat in the same workspace with an instant extract of the previous session placed into the composer as a draft; nothing is sent (#40).
+- **Continue with a model summary**: the same flow with a model-written summary; explicit click only, disabled until `handoffProvider` and `handoffModel` are set (#41).
+- Routes `GET /dsh-session-control/sizes`, `GET /dsh-session-control/handoff`, `POST /dsh-session-control/handoff-summary`.
+
 ## [0.1.4] — 2026-09-14
 
 ### Fixed

@@ -169,6 +169,27 @@ page. The Cyrillic layout is handled too, so the physical key works either way.
 Arrows move, `Enter` opens, `Esc` closes and returns the focus where it was. An archived
 result opens as a transcript, exactly as it does in the list.
 
+### 🚦 Session Size Badges
+The DSH conversation view keeps every event of a session in the page at once. In a very
+large session a long agent turn can freeze the browser tab, and with it every other DSH tab
+of the same site. Rows now warn before that happens: a **yellow** badge once a session is
+large and a **red** one once it is dangerous for the interface. The badge shows the event
+count as text, so the meaning never relies on colour alone, and its tooltip adds the log
+size. Sizes come from session metadata; logs are never decompressed for this. Thresholds
+default to 1 500 and 3 000 events and can be changed in the settings card.
+
+### ↪️ Continue in a New Session
+From a row's menu, **Continue in new session** opens a new chat in the same workspace and
+places a **draft** into its composer: the previous session's name and workspace, your recent
+requests and the agent's last report. Nothing is sent — you read, edit and send it yourself.
+The extract is assembled instantly and needs no model.
+
+**Continue with a model summary** does the same with a model-written summary instead: goal,
+what is done, what is open, agreements and key references. It spends model tokens, so it
+runs only on an explicit click and stays disabled until a provider and model are set in the
+settings card. A very large session is not handed to the model whole: the newest part within
+the configured budget is used, and the summary says so.
+
 ### 📤 Markdown Export
 The transcript window can copy the conversation to the clipboard or save it as a `.md`
 file. A truncated transcript says so in the export itself, so a fragment is never mistaken
@@ -185,6 +206,12 @@ Navigate to **Settings → Plugins → Plugin Settings → Session Control**:
 | `pinned` | `string[]` | `[]` | Array of pinned session IDs (array order determines display order) |
 | `hidden` | `string[]` | `[]` | Array of reversibly hidden session IDs |
 | `hideBlank` | `boolean` | `true` | Automatically hide sessions with zero messages |
+| `sizeWarnEvents` | `number` | `1500` | Event count from which a row shows the yellow size badge |
+| `sizeDangerEvents` | `number` | `3000` | Event count from which a row shows the red size badge |
+| `handoffProvider` | `string` | `''` | Provider id for the model summary; empty disables it |
+| `handoffModel` | `string` | `''` | Model id for the model summary; empty disables it |
+| `handoffMaxInputChars` | `number` | `60000` | Transcript budget handed to the summary model, in characters |
+| `handoffTimeoutSeconds` | `number` | `90` | Timeout of the summary model call |
 | `labels` | `Record<string, string[]>` | `{}` | Label name to the session IDs carrying it |
 
 All settings are stored on the host and synchronize across client instances.
@@ -209,6 +236,12 @@ The host half of the plugin exposes three dedicated endpoints via Cordis `webSer
 | `GET` | `/dsh-session-control/transcript` | `session=<id>`, `format=<json\|md>`, `title=<str>` | JSON or Markdown | Reads session JSONL log via descriptor handle. Returns structured message events (role, text, tool calls) or compiled Markdown. |
 | `GET` | `/dsh-session-control/titles` | `sessions=<id1,id2,...>` | JSON `{"ok": true, "titles": { "<id>": "<title>" }}` | Infers conversational preview titles from the user's first prompt (up to 60 IDs per batch; cached in host process memory). |
 | `POST` | `/dsh-session-control/export-batch` | Body: `{"sessions": [{"id": "...", "title": "..."}]}` | Markdown (`text/markdown`) | Generates a combined Markdown export document with an automated Table of Contents. |
+
+Session size and handoff routes:
+
+- `GET /dsh-session-control/sizes?sessions=<id,...>` — event count, log bytes and badge level per session (up to 60), from metadata only.
+- `GET /dsh-session-control/handoff?session=<id>&title=&cwd=` — instant handoff extract, no model.
+- `POST /dsh-session-control/handoff-summary` with `{ session, title, cwd }` — model-written summary; same-origin only, requires a configured provider and model.
 
 ## Architecture & Reliability
 
