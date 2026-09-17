@@ -5,6 +5,7 @@ import assert from 'node:assert/strict'
 function canRead(store) {
   return (
     store !== undefined &&
+    store !== null &&
     (typeof store.open === 'function' ||
       (typeof store.resolveLog === 'function' &&
         typeof store.readStoredLog === 'function'))
@@ -28,6 +29,7 @@ test('canRead распознает legacy store resolveLog + readStoredLog', () 
 
 test('canRead отклоняет неподходящий или пустой store', () => {
   assert.equal(canRead(undefined), false)
+  assert.equal(canRead(null), false)
   assert.equal(canRead({}), false)
   assert.equal(canRead({ resolveLog: async () => {} }), false)
 })
