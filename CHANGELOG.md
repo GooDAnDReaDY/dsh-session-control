@@ -5,6 +5,11 @@
 
 ## [0.2.1] — 2026-09-18
 
+### Security
+
+- Enforced strict fail-closed source verification on transcript, title, batch, and size routes via `isTrustedOrigin` and `guardRoute` (#33).
+- Restricted HTTP methods with 405 Method Not Allowed responses, rejected non-loopback untrusted requests with 403 Forbidden (#33).
+
 ### Fixed
 
 - Port session navigation, retention, clearing, and restoration to DSH alpha2 (`0.1.6-alpha.2`) Client Session API contract (#46).
