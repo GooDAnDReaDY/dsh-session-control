@@ -1,6 +1,6 @@
 {
   "name": "@goodandready/dsh-session-control",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Session management for the DeepSeek Harness sidebar: pin conversations, search their contents, read archived transcripts and hide the noise",
   "license": "MIT",
   "type": "module",
