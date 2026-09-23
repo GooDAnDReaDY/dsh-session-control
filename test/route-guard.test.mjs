@@ -44,7 +44,7 @@ test('guardRoute allows loopback address without explicit auth headers', () => {
   const res = mockRes()
   const ok = guardRoute({
     method: 'GET',
-    headers: {},
+    headers: { host: '127.0.0.1:3080' },
     socket: { remoteAddress: '127.0.0.1' }
   }, res, 'GET')
 
@@ -56,7 +56,7 @@ test('guardRoute allows IPv6 loopback address (::1)', () => {
   const res = mockRes()
   const ok = guardRoute({
     method: 'GET',
-    headers: {},
+    headers: { host: '[::1]:3080' },
     socket: { remoteAddress: '::1' }
   }, res, 'GET')
 
@@ -64,23 +64,47 @@ test('guardRoute allows IPv6 loopback address (::1)', () => {
   assert.equal(res.statusCode, 200)
 })
 
-test('guardRoute allows Bearer authorization token from external IP', () => {
+test('guardRoute rejects unverified Bearer authorization token from external IP (#57)', () => {
   const res = mockRes()
   const ok = guardRoute({
     method: 'GET',
-    headers: { authorization: 'Bearer test-token-12345' },
+    headers: { authorization: 'Bearer arbitrary-untrusted-token' },
     socket: { remoteAddress: '203.0.113.50' }
   }, res, 'GET')
+
+  assert.equal(ok, false)
+  assert.equal(res.statusCode, 403)
+})
+
+test('guardRoute allows verified Bearer token matching options (#57)', () => {
+  const res = mockRes()
+  const ok = guardRoute({
+    method: 'GET',
+    headers: { authorization: 'Bearer secret-123' },
+    socket: { remoteAddress: '203.0.113.50' }
+  }, res, 'GET', { authToken: 'secret-123' })
 
   assert.equal(ok, true)
   assert.equal(res.statusCode, 200)
 })
 
-test('guardRoute allows session cookie from external IP', () => {
+test('guardRoute rejects arbitrary cookie without signature or valid token (#57)', () => {
   const res = mockRes()
   const ok = guardRoute({
     method: 'GET',
-    headers: { cookie: 'dsh_token=xyz987; theme=dark' },
+    headers: { cookie: 'token=arbitrary; theme=dark' },
+    socket: { remoteAddress: '203.0.113.50' }
+  }, res, 'GET')
+
+  assert.equal(ok, false)
+  assert.equal(res.statusCode, 403)
+})
+
+test('guardRoute allows valid DSH signed session cookie (#57)', () => {
+  const res = mockRes()
+  const ok = guardRoute({
+    method: 'GET',
+    headers: { cookie: 'dsh-auth-VPhEEcLKeqRDBoBalzN2Nm7CnfxKhLE00pKIDWxt1sw=v1.eyJ2ZXJzaW9uIjoxfQ.signature123' },
     socket: { remoteAddress: '203.0.113.50' }
   }, res, 'GET')
 
@@ -115,15 +139,15 @@ test('guardRoute allows matching Origin and Host headers from external IP', () =
   assert.equal(res.statusCode, 200)
 })
 
-test('guardRoute allows sec-fetch-site none when host header is present', () => {
+test('guardRoute allows sec-fetch-site none when host header is present on loopback', () => {
   const res = mockRes()
   const ok = guardRoute({
     method: 'GET',
     headers: {
       'sec-fetch-site': 'none',
-      host: '198.51.100.10:3000'
+      host: '127.0.0.1:3000'
     },
-    socket: { remoteAddress: '203.0.113.50' }
+    socket: { remoteAddress: '127.0.0.1' }
   }, res, 'GET')
 
   assert.equal(ok, true)
@@ -159,16 +183,16 @@ test('guardRoute rejects mismatched method with 405 Method Not Allowed', () => {
   assert.ok(res.body.includes('GET required'))
 })
 
-test('guardRoute rejects cross-site sec-fetch-site with 403 Forbidden', () => {
+test('guardRoute rejects cross-site sec-fetch-site even from loopback IP (#57)', () => {
   const res = mockRes()
   const ok = guardRoute({
     method: 'GET',
     headers: {
       'sec-fetch-site': 'cross-site',
-      host: '198.51.100.10:3000',
+      host: '127.0.0.1:3080',
       origin: 'http://attacker.com'
     },
-    socket: { remoteAddress: '203.0.113.50' }
+    socket: { remoteAddress: '127.0.0.1' }
   }, res, 'GET')
 
   assert.equal(ok, false)
