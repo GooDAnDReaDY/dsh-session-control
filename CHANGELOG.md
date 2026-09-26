@@ -3,6 +3,11 @@
 Формат — [Keep a Changelog](https://keepachangelog.com/ru/1.1.0/),
 версии — [SemVer](https://semver.org/lang/ru/).
 
+## [0.2.7] — 2026-09-26
+
+### Fixed
+- **Безопасное разрешение сервиса connection**: обращение к сервису `connection` изолировано через безопасный `resolveConnection`, предотвращая ошибку `cannot get property "connection" without inject` в Cordis-прокси на рантайме DSH.
+
 ## [0.2.6] — 2026-09-26
 
 ### Security
