@@ -100,7 +100,7 @@ test('guardRoute rejects arbitrary cookie without signature or valid token (#57)
   assert.equal(res.statusCode, 403)
 })
 
-test('guardRoute allows valid DSH signed session cookie (#57)', () => {
+test('guardRoute rejects external IP with unverified cookie signature without core auth (#57)', () => {
   const res = mockRes()
   const ok = guardRoute({
     method: 'GET',
@@ -108,23 +108,23 @@ test('guardRoute allows valid DSH signed session cookie (#57)', () => {
     socket: { remoteAddress: '203.0.113.50' }
   }, res, 'GET')
 
-  assert.equal(ok, true)
-  assert.equal(res.statusCode, 200)
+  assert.equal(ok, false)
+  assert.equal(res.statusCode, 403)
 })
 
-test('guardRoute allows same-origin sec-fetch-site from external IP', () => {
+test('guardRoute rejects external IP with forged same-origin sec-fetch-site (#57)', () => {
   const res = mockRes()
   const ok = guardRoute({
     method: 'POST',
-    headers: { 'sec-fetch-site': 'same-origin' },
+    headers: { 'sec-fetch-site': 'same-origin', host: 'dsh.local:3080' },
     socket: { remoteAddress: '203.0.113.50' }
   }, res, 'POST')
 
-  assert.equal(ok, true)
-  assert.equal(res.statusCode, 200)
+  assert.equal(ok, false)
+  assert.equal(res.statusCode, 403)
 })
 
-test('guardRoute allows matching Origin and Host headers from external IP', () => {
+test('guardRoute rejects external IP with matching Origin and Host headers without core auth (#57)', () => {
   const res = mockRes()
   const ok = guardRoute({
     method: 'GET',
@@ -133,6 +133,88 @@ test('guardRoute allows matching Origin and Host headers from external IP', () =
       host: 'my-dsh.local:3000'
     },
     socket: { remoteAddress: '203.0.113.50' }
+  }, res, 'GET')
+
+  assert.equal(ok, false)
+  assert.equal(res.statusCode, 403)
+})
+
+test('guardRoute allows external IP when DSH connection admits request (#57)', () => {
+  const res = mockRes()
+  const mockConnection = {
+    requestRejection: () => undefined
+  }
+  const ok = guardRoute({
+    method: 'GET',
+    headers: {
+      cookie: 'dsh-auth-session=v1.payload.sig',
+      host: 'my-dsh.local:3080'
+    },
+    socket: { remoteAddress: '203.0.113.50' }
+  }, res, 'GET', { connection: mockConnection })
+
+  assert.equal(ok, true)
+  assert.equal(res.statusCode, 200)
+})
+
+test('guardRoute rejects external IP with 401 when DSH connection reports unauthenticated (#57)', () => {
+  const res = mockRes()
+  const mockConnection = {
+    requestRejection: () => 401
+  }
+  const ok = guardRoute({
+    method: 'GET',
+    headers: {
+      host: 'my-dsh.local:3080'
+    },
+    socket: { remoteAddress: '203.0.113.50' }
+  }, res, 'GET', { connection: mockConnection })
+
+  assert.equal(ok, false)
+  assert.equal(res.statusCode, 401)
+})
+
+test('guardRoute rejects external IP with 403 when DSH connection reports forbidden (#57)', () => {
+  const res = mockRes()
+  const mockConnection = {
+    requestRejection: () => 403
+  }
+  const ok = guardRoute({
+    method: 'GET',
+    headers: {
+      host: 'my-dsh.local:3080'
+    },
+    socket: { remoteAddress: '203.0.113.50' }
+  }, res, 'GET', { connection: mockConnection })
+
+  assert.equal(ok, false)
+  assert.equal(res.statusCode, 403)
+})
+
+test('guardRoute allows loopback address with same-origin header', () => {
+  const res = mockRes()
+  const ok = guardRoute({
+    method: 'POST',
+    headers: {
+      'sec-fetch-site': 'same-origin',
+      host: '127.0.0.1:3080'
+    },
+    socket: { remoteAddress: '127.0.0.1' }
+  }, res, 'POST')
+
+  assert.equal(ok, true)
+  assert.equal(res.statusCode, 200)
+})
+
+test('guardRoute allows loopback address with matching Origin and Host headers', () => {
+  const res = mockRes()
+  const ok = guardRoute({
+    method: 'GET',
+    headers: {
+      origin: 'http://127.0.0.1:3080',
+      host: '127.0.0.1:3080'
+    },
+    socket: { remoteAddress: '127.0.0.1' }
   }, res, 'GET')
 
   assert.equal(ok, true)
