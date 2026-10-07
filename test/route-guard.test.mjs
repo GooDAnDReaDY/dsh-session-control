@@ -191,6 +191,40 @@ test('guardRoute rejects external IP with 403 when DSH connection reports forbid
   assert.equal(res.statusCode, 403)
 })
 
+test('guardRoute normalizes non-numeric rejection to 403 without TypeError (#67)', () => {
+  for (const nonNumeric of [true, "rejected", { error: "denied" }, null]) {
+    const res = mockRes()
+    const mockConnection = {
+      requestRejection: () => nonNumeric
+    }
+    const ok = guardRoute({
+      method: 'GET',
+      headers: { host: 'my-dsh.local:3080' },
+      socket: { remoteAddress: '203.0.113.50' }
+    }, res, 'GET', { connection: mockConnection })
+
+    assert.equal(ok, false)
+    assert.equal(typeof res.statusCode, 'number')
+    assert.equal(res.statusCode, 403)
+    assert.ok(res.body.includes("untrusted request origin"))
+  }
+})
+
+test('guardRoute preserves custom integer HTTP status codes between 400 and 599 (#67)', () => {
+  const res = mockRes()
+  const mockConnection = {
+    requestRejection: () => 503
+  }
+  const ok = guardRoute({
+    method: 'GET',
+    headers: { host: 'my-dsh.local:3080' },
+    socket: { remoteAddress: '203.0.113.50' }
+  }, res, 'GET', { connection: mockConnection })
+
+  assert.equal(ok, false)
+  assert.equal(res.statusCode, 503)
+})
+
 test('guardRoute allows loopback address with same-origin header', () => {
   const res = mockRes()
   const ok = guardRoute({
