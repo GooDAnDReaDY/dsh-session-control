@@ -1,17 +1,14 @@
-# Слой dsh-session-control: применяется автоматически, когда пакет установлен
-# как bundle профиля (package.json объявляет dsh.bundle.patch).
+# dsh-session-control profile layer: applied automatically when installed
+# as a profile bundle (package.json declares dsh.bundle.patch).
 #
-# Плагин занимает тело боковой панели — слот sidebar.workspaces. Слот объявлен
-# ядром как kind: "single", второго регистранта не бывает, поэтому штатный ряд
-# приходится освободить.
+# The plugin occupies the sidebar body via the single-registrant
+# "sidebar.workspaces" slot. The default ui-workspace row is disabled
+# to yield the slot.
 #
-# Ряд ui-workspace попутно отдавал служебный сервис uiWorkspace, который стоит в
-# ОБЯЗАТЕЛЬНОМ inject у dsh-client-ui-sidebar и dsh-client-ui-conversation.
-# Наша половина «сервис» отдаёт его вместо ядровой; без неё не поднимутся ни
-# панель, ни интерфейс беседы.
+# In turn, uiWorkspace service required by dsh-client-ui-sidebar and
+# dsh-client-ui-conversation is provided by this plugin's service half.
 #
-# Аварийный выход: dsh plugin remove @goodandready/dsh-session-control —
-# ряд ui-workspace снова включается и возвращается штатная панель.
+# Recovery: dsh plugin remove @goodandready/dsh-session-control
 - id: ui-workspace
   disabled: true
 
