@@ -3,6 +3,15 @@
 Формат — [Keep a Changelog](https://keepachangelog.com/ru/1.1.0/),
 версии — [SemVer](https://semver.org/lang/ru/).
 
+## [0.2.8] — 2026-10-07
+
+### Fixed
+- **Совместимость с архитектурой настроек DSH 0.2.0-rc.1/rc.2**: удален вызов несуществующего метода sctx.settings.register(...), предотвращая ошибку TypeError: sctx.settings.register is not a function при активации плагина (#64, #66, #68).
+- **Поддержка динамических настроек через volatile-поля**: все пользовательские поля схемы Config помечены модификатором .volatile(), что делает форму настроек доступной в SettingsForms DSH без статуса unavailable (#64).
+- **Ленивое разворачивание volatile-значений в runtime**: добавлен хелпер plainConfig для корректного чтения актуальных значений без перезапуска рантайма DSH (#64).
+- **Объявление сервиса configForms на клиенте**: сервис configForms добавлен в exports.inject в lib/client.js, регистрация карточек переведена на whileServed (#64, #68).
+- **Очистка устаревших слотов**: удалена регистрация в снятом слоте settings.plugin.item (#64, #68).
+
 ## [0.2.7] — 2026-09-26
 
 ### Fixed

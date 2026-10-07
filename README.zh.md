@@ -54,7 +54,7 @@ graph LR
         PANEL["SessionListPanel\n(sidebar.workspaces 插槽)"]
         JUMP["QuickJump 弹窗\n(Alt+K 快捷键)"]
         VIEWER["ArchiveViewer 弹窗\n(JSONL 记录查看器)"]
-        SETTINGS["SettingsCard\n(settings.plugin.item)"]
+        SETTINGS["SettingsCard\n(plugins.item)"]
     end
 
     subgraph Host ["Node.js 服务端 (lib/index.js & transcript.js)"]

@@ -54,7 +54,7 @@ graph LR
         PANEL["SessionListPanel\n(слот sidebar.workspaces)"]
         JUMP["Окно QuickJump\n(сочетание Alt+K)"]
         VIEWER["Модалка ArchiveViewer\n(просмотрщик JSONL)"]
-        SETTINGS["SettingsCard\n(settings.plugin.item)"]
+        SETTINGS["SettingsCard\n(plugins.item)"]
     end
 
     subgraph Host ["Серверная часть Node.js (lib/index.js & transcript.js)"]
