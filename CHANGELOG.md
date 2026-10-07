@@ -3,6 +3,22 @@
 Формат — [Keep a Changelog](https://keepachangelog.com/ru/1.1.0/),
 версии — [SemVer](https://semver.org/lang/ru/).
 
+## [0.2.9] — 2026-10-07
+
+### Security
+- **Изоляция сессий по границам рабочих областей (Workspace Boundary Isolation, #69)**:
+  - Все 6 серверных маршрутов (`/transcript`, `/titles`, `/export-batch`, `/sizes`, `/handoff`, `/handoff-summary`) сверяют принадлежность запрашиваемых сессий рабочей области через `checkSessionAccess` (по реестру `workspaceRegistry`/`workspaces` и хранилищу `workspace.json`).
+  - Чтение расшифровок (`/transcript`, `/handoff`, `/handoff-summary`) и пакетный экспорт (`/export-batch`) требуют явного указания рабочей области (параметр `workspace`, заголовок `X-Dsh-Workspace` или поле `workspace` в теле POST), отклоняя неавторизованные запросы с кодом `400 Bad Request`.
+  - Попытка доступа к сессии чужой рабочей области отклоняется с кодом `403 Forbidden` (`session does not belong to specified workspace`), предотвращая чтение произвольных сессий через сетевые мосты LAN (`dsh-lanmode`).
+  - В `/export-batch` проверяется каждый идентификатор из переданного списка (лимит ограничен 50 сессиями); при обнаружении чужой сессии выгрузка отклоняется с кодом `403 Forbidden`.
+  - В `lib/client.js` обновлены все вызовы к маршрутам для передачи идентификатора текущей рабочей области.
+- **Нормализация кодов отказа авторизации соединения (#67)**:
+  - В `lib/guard.js` возвращаемое значение `connection.requestRejection(req)` нормализуется к целочисленному HTTP-статусу (401/403/5xx), предотвращая ошибку `TypeError: The "statusCode" argument must be an integer`, если ядро или мост возвращает нечисловое значение.
+
+### Fixed
+- **Англоязычные комментарии в cordis.patch.yml (#70)**:
+  - Комментарии в `cordis.patch.yml` переведены на технический английский язык; соблюдается строгая zero-Cyrillic policy в составе npm-пакета.
+
 ## [0.2.8] — 2026-10-07
 
 ### Fixed
