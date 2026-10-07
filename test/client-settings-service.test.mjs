@@ -143,7 +143,7 @@ test("client lifecycle: fiber activates and registers UI slots with configForms"
   assert.ok(registeredSlots["conversation.hero.workspace"], "conversation.hero.workspace must register");
   assert.ok(registeredSlots["plugins.item"], "plugins.item must register");
   assert.ok(registeredSlots["plugins.row.config"], "plugins.row.config must register");
-  assert.ok(registeredSlots["settings.plugin.item"], "settings.plugin.item must register");
+  assert.equal(registeredSlots["settings.plugin.item"], undefined, "settings.plugin.item must not register");
   assert.ok(registeredSlots["conversation.input.dock"], "conversation.input.dock must register");
 });
 
@@ -213,7 +213,7 @@ test("SettingsCard: reads configForms ready snapshot, supports summary and unava
 
   modExports.apply(mockCtx);
 
-  const SettingsCard = registeredSlots["settings.plugin.item"].comp;
+  const SettingsCard = registeredSlots["plugins.item"].comp;
 
   // 1. Ready state render
   const readyView = SettingsCard({
