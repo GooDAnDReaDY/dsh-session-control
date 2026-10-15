@@ -3,6 +3,16 @@
 Формат — [Keep a Changelog](https://keepachangelog.com/ru/1.1.0/),
 версии — [SemVer](https://semver.org/lang/ru/).
 
+## [0.2.10] — 2026-10-15
+
+### Fixed
+- **Инициализация URL в маршруте `/dsh-session-control/handoff-summary` (#73)**:
+  - Добавлена инициализация `const url = new URL(req.url, 'http://localhost')` в обработчик `handoff-summary`. Запросы, в теле которых не указано поле `workspace`, больше не завершаются `ReferenceError: url is not defined` (HTTP 500), а корректно считывают идентификатор рабочей области из query-параметра URL `?workspace=...` или заголовка `X-Dsh-Workspace` (либо возвращают чистый `400 Bad Request` при его отсутствии).
+- **Очистка мертвого слушателя конфигурации (#73)**:
+  - Удалена неиспользуемая подписка `ctx.on('config')` в `lib/index.js`, сохраняя штатный механизм динамического обновления настроек через `loader/volatile-update` и ленивое чтение `plainConfig`.
+- **Тесты изоляции handoff-summary (#73)**:
+  - В `test/workspace-isolation.test.mjs` добавлены тесты разрешения контекста рабочей области через URL query params в маршруте `/handoff-summary` без выброса необработанных исключений.
+
 ## [0.2.9] — 2026-10-07
 
 ### Security
