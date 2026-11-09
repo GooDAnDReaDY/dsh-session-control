@@ -3,6 +3,16 @@
 Формат — [Keep a Changelog](https://keepachangelog.com/ru/1.1.0/),
 версии — [SemVer](https://semver.org/lang/ru/).
 
+## [0.2.11] — 2026-11-09
+
+### Fixed
+- **Поддержка формата сообщений сессий v4 (`plugin:<имя пакета>`, #75)**:
+  - В маршруте `/dsh-session-control/handoff-summary` (`lib/index.js`) источник создаваемого пользовательского сообщения переведен с устаревшего вида `{ kind: 'plugin', plugin: 'dsh-session-control' }` на канонический producer-owned вид формата v4: `{ kind: 'plugin:dsh-session-control' }`.
+  - Устранена ошибка валидатора схемы `format v4 message requires a producer-owned source kind` на ядре DSH v4 (`dsh >= 0.1.7-alpha.1`).
+  - В `lib/handoff.js` объявлена и экспортирована константа `HANDOFF_SUMMARY_SOURCE`.
+  - Сохранена обратная совместимость с ядром формата v3.
+  - Добавлены тесты соответствия виду источника в `test/handoff.test.mjs` и `test/workspace-isolation.test.mjs`.
+
 ## [0.2.10] — 2026-10-15
 
 ### Fixed
