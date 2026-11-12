@@ -3,6 +3,17 @@
 Формат — [Keep a Changelog](https://keepachangelog.com/ru/1.1.0/),
 версии — [SemVer](https://semver.org/lang/ru/).
 
+## [0.2.12] — 2026-11-12
+
+### Added
+- **Перенос поискового инструмента агента `session_search` из `dsh-session-search` (#79)**:
+  - В плагин встроен поисковый инструмент агента `session_search` (`lib/search-tool.js`), регистрируемый через `ctx.inject(['tools', 'sessionQuery'])`.
+  - Полнотекстовый поиск по историческим сессиям через ядровый движок SQLite FTS5 (`ctx.sessionQuery.searchSessions`) без накладных расходов на распаковку логов в оперативную память.
+  - Настраиваемые параметры в `Config`: `searchMaxResults` (по умолчанию 20), `searchSnippetLength` (по умолчанию 200), `searchTimeoutMs` (по умолчанию 30000).
+  - В `SettingsCard` (`lib/client.js`) добавлена секция настроек инструмента поиска с локализацией на английский (`en`) и китайский (`zh`) языки.
+  - В `package.json` добавлена peer-зависимость `"@deepseek-ai/dsh-tools": "*"`.
+  - В `test/search-tool.test.mjs` добавлены 12 автоматических модульных тестов.
+
 ## [0.2.11] — 2026-11-09
 
 ### Fixed

@@ -145,6 +145,9 @@ Hover checkboxes and Shift+Click range selection allow batch hiding, unhiding, a
 ### ✏️ In-Place Inline Renaming
 Rename conversations instantly with a double click on the title or by pressing `F2`.
 
+### 🔎 Historical Session Search Agent Tool (`session_search`)
+Built-in agent tool allowing intelligent agents to search across historical conversations via the core SQLite FTS5 index (`@deepseek-ai/dsh-session-query`). Recalls solutions, decisions, and past code snippets directly during conversation turns without RAM overhead from decompressing log archives.
+
 ### 🏷️ Labels
 A session cannot be moved between workspaces — membership is derived from its working
 directory, and the core rejects any session whose `cwd` does not match the folder path.
@@ -213,6 +216,9 @@ Navigate to **Settings → Plugins → Plugin Settings → Session Control**:
 | `handoffMaxInputChars` | `number` | `60000` | Transcript budget handed to the summary model, in characters |
 | `handoffTimeoutSeconds` | `number` | `90` | Timeout of the summary model call |
 | `labels` | `Record<string, string[]>` | `{}` | Label name to the session IDs carrying it |
+| `searchMaxResults` | `number` | `20` | Maximum matching sessions returned per `session_search` query |
+| `searchSnippetLength` | `number` | `200` | Maximum character length of the context snippet extracted around match |
+| `searchTimeoutMs` | `number` | `30000` | Query timeout in milliseconds |
 
 All settings are stored on the host and synchronize across client instances.
 

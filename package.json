@@ -1,7 +1,7 @@
 {
   "name": "@goodandready/dsh-session-control",
-  "version": "0.2.11",
-  "description": "Session management for the DeepSeek Harness sidebar: pin conversations, search their contents, read archived transcripts and hide the noise",
+  "version": "0.2.12",
+  "description": "Session management for the DeepSeek Harness sidebar: pin conversations, search their contents, read archived transcripts, historical session search agent tool, and hide the noise",
   "license": "MIT",
   "type": "module",
   "main": "lib/index.js",
@@ -41,7 +41,8 @@
     }
   },
   "peerDependencies": {
-    "@deepseek-ai/cordis": "^4.0.2"
+    "@deepseek-ai/cordis": "^4.0.2",
+    "@deepseek-ai/dsh-tools": "*"
   },
   "scripts": {
     "test": "node --test test/*.test.mjs"

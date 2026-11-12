@@ -181,6 +181,9 @@ DSH 的对话视图会把会话的全部事件同时保留在页面中。在超�
 ### ✏️ 就地快速重命名 (In-Place Rename)
 双击会话标题或按下 `F2` 快捷键即可直接在列表中重命名。
 
+### 🔎 历史会话检索智能体工具 (`session_search`)
+内置智能体工具，支持通过底层 SQLite FTS5 引擎 (`@deepseek-ai/dsh-session-query`) 检索历史对话。智能体可在对话中直接回忆历史方案与决策，无需消耗内存解压日志归档。
+
 ---
 
 ## 配置项
@@ -199,6 +202,9 @@ DSH 的对话视图会把会话的全部事件同时保留在页面中。在超�
 | `handoffMaxInputChars` | `number` | `60000` | 交给总结模型的对话记录预算（字符） |
 | `handoffTimeoutSeconds` | `number` | `90` | 模型调用超时（秒） |
 | `labels` | `Record<string, string[]>` | `{}` | 标签名称与其包含的会话 ID |
+| `searchMaxResults` | `number` | `20` | 智能体每次检索最多返回的会话条数 |
+| `searchSnippetLength` | `number` | `200` | 匹配上下文摘要的最大字符长度 |
+| `searchTimeoutMs` | `number` | `30000` | 检索超时时间（毫秒） |
 
 所有设置均持久保存在宿主端并在所有客户端间同步。
 
