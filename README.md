@@ -235,17 +235,22 @@ All settings are stored on the host and synchronize across client instances.
 
 ## HTTP API Routes Reference
 
-The host half of the plugin exposes three dedicated endpoints via Cordis `webServer`:
+The host half of the plugin exposes seven dedicated endpoints via Cordis `webServer`:
 
 | Method | Endpoint | Query / Body Parameters | Response Format | Description |
 |---|---|---|---|---|
-| `GET` | `/dsh-session-control/transcript` | `session=<id>`, `format=<json\|md>`, `title=<str>` | JSON or Markdown | Reads session JSONL log via descriptor handle. Returns structured message events (role, text, tool calls) or compiled Markdown. |
-| `GET` | `/dsh-session-control/titles` | `sessions=<id1,id2,...>` | JSON `{"ok": true, "titles": { "<id>": "<title>" }}` | Infers conversational preview titles from the user's first prompt (up to 60 IDs per batch; cached in host process memory). |
-| `GET` | `/dsh-session-control/export-batch` | `sessions=<id1,id2,...>` | Markdown (`text/markdown`) | Generates a combined Markdown export document with an automated Table of Contents. |
-| `GET` | `/dsh-session-control/sizes` | `sessions=<id1,id2,...>` | JSON `{"ok": true, "sizes": { "<id>": {...} }}` | Returns event count, log bytes and badge level per session (up to 60), from metadata only. |
-| `GET` | `/dsh-session-control/handoff` | `session=<id>&title=...&cwd=...` | JSON `{"ok": true, "handoff": {...}}` | Builds an instant handoff extract into a composer draft without invoking a model. |
-| `POST` | `/dsh-session-control/handoff-summary` | Body: `{"session": "...", "title": "...", "cwd": "..."}` | JSON `{"ok": true, "draft": "..."}` | Generates a model-assisted handoff summary draft; requires configured provider and model. |
-| `GET, POST` | `/api/dsh-session-control/update` | Header: `x-dsh-plugin-update: 1` (for POST) | JSON | Checks current/latest version from registry (GET) and performs in-app one-click update (POST; loopback and same-origin only). |
+| `GET` | `/dsh-session-control/transcript` | `session=<id>`, `workspace=<id>`, `format=<json\|md>`, `title=<str>` | JSON or Markdown | Reads the tail of a session log through the storage handle. Returns structured message events (role, text, tool calls) or compiled Markdown. |
+| `GET` | `/dsh-session-control/titles` | `sessions=<id1,id2,...>`, `workspace=<id>` | JSON `{"ok": true, "titles": { "<id>": "<title>" }}` | Infers conversational preview titles from the user's first prompt (up to 30 IDs per batch; only the head of each log is read; cached in host process memory). |
+| `GET` | `/dsh-session-control/export-batch` | `sessions=<id1,id2,...>`, `workspaces=<id1,id2,...>` | Markdown (`text/markdown`) | Generates a combined Markdown export with a Table of Contents. Each session is checked against its own workspace, so a selection may span folders; exceeding the 50-session batch is stated in the document. |
+| `GET` | `/dsh-session-control/sizes` | `sessions=<id1,id2,...>`, `workspace=<id>` | JSON `{"ok": true, "sizes": { "<id>": {...} }}` | Returns event count, log bytes and badge level per session (up to 60), from metadata only. |
+| `GET` | `/dsh-session-control/handoff` | `session=<id>&workspace=<id>&title=...&cwd=...` | JSON `{"ok": true, "mode": "extract", "text": "..."}` | Builds an instant handoff extract into a composer draft without invoking a model. |
+| `POST` | `/dsh-session-control/handoff-summary` | Body: `{"session": "...", "workspace": "...", "title": "...", "cwd": "..."}` | JSON `{"ok": true, "mode": "summary", "text": "..."}` | Generates a model-assisted handoff summary draft; requires configured provider and model. |
+| `GET, POST` | `/api/dsh-session-control/update` | Header: `x-dsh-plugin-update: 1` (required for POST) | JSON | Checks current/latest version from the registry (GET) and performs an in-app one-click update (POST). Both require a loopback, same-origin request with a matching `Host`; a failed check answers `latestCheckFailed: true` rather than "up to date". |
+
+Every route that reads session data also enforces workspace isolation through
+`checkSessionAccess`: a missing workspace is `400`, an unknown one is `404`, and a
+session of another folder is `403`. Passwords, tokens and session cookies are never
+echoed in responses.
 
 ## Architecture & Reliability
 
@@ -268,9 +273,21 @@ The plugin core ships with English strings by default. Multilingual localization
 
 ---
 
+## Visual verification
+
+![Session Control settings card: a successful update check and a failed one](media/visual-verification.png)
+
+Both frames come from the real settings card of the release candidate, in a dark
+theme. The left frame is a live check that reached the registry; the right frame
+is the same card with the status route aborted on purpose, so a failed check is
+visibly different from "up to date" instead of pretending success. No keys,
+tokens, accounts, host names or local paths appear in the image.
+
+---
+
 ## Compatibility
 
-- Tested with DeepSeek Harness `0.1.2-rc.1` and `0.1.3-alpha.1`.
+- Tested with DeepSeek Harness `0.1.5-alpha.1` and `0.1.6-alpha.2` (descriptor-based `sessionPersistence`, `configForms` settings, optional `dsh-tools`).
 - Compatible with Node.js `^20.19.0` or `>=22.12.0`.
 - Seamlessly integrates alongside `@goodandready/dsh-lanmode`, `@goodandready/dsh-kanban`, `@goodandready/dsh-cron`, and other DSH plugins.
 
